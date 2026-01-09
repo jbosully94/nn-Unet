@@ -25,13 +25,14 @@ To specify GPU:
 export CUDA_VISIBLE_DEVICES=0  # Use GPU 0
 export CUDA_VISIBLE_DEVICES=1  # Use GPU 1
 ```
+As both eBERproc machines have 2 GPU's each, we are able to simultaniously train across both GPU's (significantly speeds up training) or we can segment two seperate images across both GPUs in parallel. 
 
 ## Data Preparation
 
 ### Folder Structure
 
 ```
-$nnUNet_raw/Dataset100_SoilCT/
+$nnUNet_raw/Dataset100_SampleID/
 ├── dataset.json
 ├── imagesTr/
 │   ├── s000_0000.tif
@@ -44,9 +45,10 @@ $nnUNet_raw/Dataset100_SoilCT/
     ├── s001.tif
     └── s001.json
 ```
+So this in the naming convention, here we call each thing a "Dataset" the number has to be unique for each case and what follows after the underscore can be whatever you want to call it. For example, an experiment or a sample ID.
 
 ### Naming Convention
-
+Here we are specifying case ID as an individual scan.
 - **Images:** `{case_id}_0000.tif` (the `_0000` is the channel index)
 - **Labels:** `{case_id}.tif` (no channel suffix)
 - **Spacing JSON:** `{case_id}.json` (matches case_id, not full filename)
@@ -58,8 +60,9 @@ Each image and label needs a spacing JSON file:
 ```bash
 echo '{"spacing": [1.1, 1.1, 1.1]}' > s000.json
 ```
+The spacing is used to determine the optimum uNet architecture.
 
-Format: `[Z, Y, X]` in any consistent units. Only matters if you have mixed resolutions.
+Format: `[Z, Y, X]` in any consistent units. Only matters if you have mixed resolutionsm such as unequal voxel sizes.
 
 ### Label Values
 
@@ -95,6 +98,7 @@ remapped[lbl == 3] = 2  # POM -> class 2
 
 tifffile.imwrite('label_remapped.tif', remapped)
 ```
+
 
 ### dataset.json
 
