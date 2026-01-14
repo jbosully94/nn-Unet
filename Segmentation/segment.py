@@ -5,8 +5,6 @@ from pathlib import Path
 from nnunetv2.inference.predict_from_raw_data import nnUNetPredictor
 
 base = Path("/gdata/dm/EBERLIGHT/Shabtai/7BM/2025-3/Shabtai-20251021-e281641/analysis")
-output_dir = base / "Segmented_NoMask"
-output_dir.mkdir(exist_ok=True)
 
 predictor = nnUNetPredictor()
 predictor.initialize_from_trained_model_folder(
@@ -17,6 +15,7 @@ predictor.initialize_from_trained_model_folder(
 
 for folder in sorted(base.glob("*/recon_denoised")):
     name = folder.parent.name
+    output_dir = folder.parent / "Segmented_NoMask"
     
     if (output_dir / f"{name}.tif").exists():
         print(f"{name}: skip")
@@ -25,6 +24,8 @@ for folder in sorted(base.glob("*/recon_denoised")):
     slices = sorted(folder.glob("*.tif*"))
     if not slices:
         continue
+    
+    output_dir.mkdir(exist_ok=True)
     
     print(f"{name}: loading {len(slices)} slices...")
     stack = np.stack([tifffile.imread(s) for s in slices])
