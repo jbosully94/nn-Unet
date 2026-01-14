@@ -8,7 +8,7 @@ base = Path("/gdata/dm/EBERLIGHT/Shabtai/7BM/2025-3/Shabtai-20251021-e281641/ana
 
 predictor = nnUNetPredictor()
 predictor.initialize_from_trained_model_folder(
-    "/home/beams/OSULLIVANJ/nnUNet_results/Dataset100_SoilCT/nnUNetTrainer__nnUNetPlans__3d_fullres/fold_all",
+    "/home/beams/OSULLIVANJ/nnUNet_results/Dataset100_SoilCT/nnUNetTrainer__nnUNetPlans__3d_fullres",
     use_folds="all",
     checkpoint_name="checkpoint_best.pth"
 )
