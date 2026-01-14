@@ -3,9 +3,9 @@
 ## Setup
 
 ```bash
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=1
 ```
-
+This will use the second GPU by default when you set this. 
 ## Script
 
 ```python
