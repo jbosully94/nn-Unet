@@ -1,10 +1,11 @@
 # nnU-Net Guide for 3D Soil CT Segmentation
 
-A practical guide for using nnU-Net v2 for semantic segmentation of soil CT data.
-
 ## Installation
 
+I like to setup a new python environment. I've moved away from conda recently, just using the normal python one for this
 ```bash
+python -m venv ~/pathtowherever/nnunet
+source ~/pathtowherever/nnunet/bin/activate
 pip install nnunetv2 tifffile
 ```
 
@@ -19,6 +20,7 @@ export nnUNet_results="$HOME/nnUNet_results"
 
 mkdir -p $nnUNet_raw $nnUNet_preprocessed $nnUNet_results
 ```
+eberproc1 and 2 has two GPU's. You can specify which one you want to use, or both!
 
 To specify GPU:
 ```bash
@@ -102,6 +104,8 @@ this is the typical output from draongfly labeling. But the issue is, the highes
 2 is POM
 3 is unlabeled
 
+I do this in a python script below.
+
 ## Complete Data Preparation Script
 
 This script handles everything - copying, renaming, remapping, and JSON creation:
@@ -126,7 +130,7 @@ dataset_id = 100
 dataset_name = "SoilCT"
 spacing = [1.1, 1.1, 1.1]
 
-out = output_dir / f"Dataset{dataset_id:03d}_{dataset_name}"
+out = output_dir / f"Dataset{dataset_id}_{dataset_name}"
 (out / "imagesTr").mkdir(parents=True, exist_ok=True)
 (out / "labelsTr").mkdir(parents=True, exist_ok=True)
 
@@ -219,8 +223,7 @@ The test-time augmentation is good, especially if you have small images. It spee
 
 ## Batch Prediction with Python API
 
-For processing many images without temp files:
-
+You can predict images directly, 
 ```python
 #!/usr/bin/env python3
 import numpy as np
@@ -305,7 +308,7 @@ You don't need to label every voxel. nnU-Net supports partial annotation:
 
 The network sees full 3D context but only trains on labeled voxels. 
 
-## Region-Based Labels (Hierarchical)
+## Region-Based Labels
 Let's say you have an aggregate, and you want to segment the pores and POM within that aggregate this might be a good option. I am yet to try this but could be worth a shot. 
 
 ```json
@@ -329,19 +332,7 @@ Network learns that aggregate = pores + matrix + POM. You annotate:
 - 2 = matrix inside aggregate  
 - 3 = POM inside aggregate
 
-Get aggregate mask from prediction: `aggregate = (pred > 0)`
-
-## Converting Image Sequences to 3D Stack
-
-```python
-import numpy as np
-import tifffile
-from pathlib import Path
-
-slices = sorted(Path('/path/to/sequence/').glob('*.tif'))
-stack = np.stack([tifffile.imread(s) for s in slices])
-tifffile.imwrite('volume.tif', stack)
-```
+HAVEN'T TESTED THIS THOUGH!
 
 ## File Locations
 
