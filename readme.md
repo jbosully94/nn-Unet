@@ -10,7 +10,7 @@ pip install nnunetv2 tifffile
 
 ## Environment Setup
 
-Run these each session:
+Run these each session, there's a way to make it so you don't have to run this every time. I think its called bashrc?
 
 ```bash
 export nnUNet_raw="$HOME/nnUNet_raw"
@@ -37,7 +37,7 @@ Dataset101_Roots      → -d 101
 Dataset200_NewProject → -d 200
 ```
 
-The folder must be named `Dataset{ID}_{Name}`. The name after the underscore can be anything.
+The folder must be named Dataset{ID}_{Name}. The name after the underscore can be anything.
 
 ## Data Preparation
 
@@ -69,9 +69,9 @@ $nnUNet_raw/Dataset100_SoilCT/
 
 | File Type | Format | Example |
 |-----------|--------|---------|
-| Image | `{case_id}_0000.tif` | `s000_0000.tif` |
-| Label | `{case_id}.tif` | `s000.tif` |
-| Spacing (both) | `{case_id}.json` | `s000.json` |
+| Image | `{scan_id}_0000.tif` | `s000_0000.tif` |
+| Label | `{scan_id}.tif` | `s000.tif` |
+| Spacing (both) | `{scan_id}.json` | `s000.json` |
 
 The `_0000` suffix on images indicates channel 0 (CT data has one channel). Labels don't have this suffix.
 
@@ -137,22 +137,22 @@ for img_path in sorted(image_dir.glob("*.tif*")):
         print(f"SKIP: {img_path.name}")
         continue
     
-    case_id = f"s{count:03d}"
+    scan_id = f"s{count:03d}"
     
     img = tifffile.imread(img_path)
-    tifffile.imwrite(out / "imagesTr" / f"{case_id}_0000.tif", img.astype(np.float32))
+    tifffile.imwrite(out / "imagesTr" / f"{scan_id}_0000.tif", img.astype(np.float32))
     
     lbl = tifffile.imread(lbl_path)
     remapped = np.full(lbl.shape, 3, dtype=np.uint8)
     remapped[lbl == 1] = 0
     remapped[lbl == 2] = 1
     remapped[lbl == 3] = 2
-    tifffile.imwrite(out / "labelsTr" / f"{case_id}.tif", remapped)
+    tifffile.imwrite(out / "labelsTr" / f"{scan_id}.tif", remapped)
     
     for folder in ["imagesTr", "labelsTr"]:
-        json.dump({"spacing": spacing}, open(out / folder / f"{case_id}.json", "w"))
+        json.dump({"spacing": spacing}, open(out / folder / f"{scan_id}.json", "w"))
     
-    print(f"{img_path.name} -> {case_id}")
+    print(f"{img_path.name} -> {scan_id}")
     count += 1
 
 json.dump({
